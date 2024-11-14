@@ -46,7 +46,7 @@ def create_network(edges: list, label_team_only: bool = True, selected_member: s
     return x_nodes, y_nodes, z_nodes, x_edges, y_edges, z_edges, node_labels, node_colors, hover_text
 
 
-def create_plotly_plot(edges: list, selected_member: str = None) -> go.Figure:
+def create_plotly_plot(edges: list, selected_member: str = None, title: str = "") -> go.Figure:
     x_nodes, y_nodes, z_nodes, x_edges, y_edges, z_edges, node_labels, \
     node_colors, hover_text = create_network(edges, selected_member=selected_member)
 
@@ -74,14 +74,14 @@ def create_plotly_plot(edges: list, selected_member: str = None) -> go.Figure:
     ))
 
     fig.update_layout(
-        title="",
+        title=title,
         showlegend=False,
         scene=dict(
             xaxis=dict(showgrid=False, zeroline=False, showbackground=False, visible=False),
             yaxis=dict(showgrid=False, zeroline=False, showbackground=False, visible=False),
             zaxis=dict(showgrid=False, zeroline=False, showbackground=False, visible=False),
         ),
-        margin=dict(l=0, r=0, t=0, b=0),
+        margin=dict(l=0, r=0, t=20, b=0),
         dragmode="orbit"
     )
 

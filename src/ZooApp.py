@@ -12,7 +12,34 @@ if "team_generated" not in st.session_state:
 if "selected_option" not in st.session_state:
     st.session_state.selected_option = None
 
-st.title("Zoo Keeper Exploration")
+
+@st.cache_data
+def render_plots(interactions, selected_zoo_keeper):
+    start_date = min([i[2] for i in interactions])
+    end_date = max([i[2] for i in interactions])
+
+    current_date = start_date
+    while current_date <= end_date:
+        day_interactions = [i for i in interactions if i[2].date() == current_date.date()]
+        pruned_interactions = dg.prune_interactions(day_interactions)
+        st.plotly_chart(np.create_plotly_plot(pruned_interactions, selected_member=selected_zoo_keeper,
+                                              title=current_date.strftime('%b %d, %Y')))
+        current_date += timedelta(days=1)  # Move to the next day
+
+    pruned_interactions = dg.prune_interactions(interactions)
+    st.plotly_chart(np.create_plotly_plot(pruned_interactions, selected_member=selected_zoo_keeper,
+                                          title="Entire Span"))
+
+
+st.title("Zoo Manager Cost Cutting Tool")
+
+st.write("""
+You are a manager for a local zoo. Recently the marketing team ran a hiring ad campaign that was hyper effective and 
+resulted in several animal loving zoo keepers being hired. Some of the zoo keepers are over zealous and are covering
+for too many animals. This is a problem for you, as the extra work by the zoo keepers means higher wages due to their
+hiring contract. Use the widgets below to model the staff and find the overly zealous animal lover that is going to
+bankrupt the zoo. 
+""")
 
 num_zoo_keepers = st.number_input("How many Zoo Keepers:", min_value=1, step=5, value=30)
 num_assigned_animals = st.number_input("How many animals are they responsible for:", min_value=1, step=5, value=20)
@@ -29,25 +56,26 @@ if st.button("Create Team"):
     st.markdown("***")
 
 if st.session_state.team_generated:
+    st.markdown("***")
     st.session_state.selected_option = st.selectbox(
         "Select a zoo keeper to review",
         st.session_state.team.keys())
     st.markdown(f"Rendering animal interactions for: **{st.session_state.selected_option}**")
-    st.markdown("***")
+
 
 # Display content for the selected zoo keeper
+
 if st.session_state.selected_option is not None:
-    start_date = min([i[2] for i in st.session_state.interactions])
-    end_date = max([i[2] for i in st.session_state.interactions])
+    render_plots(st.session_state.interactions, st.session_state.selected_option)
 
-    current_date = start_date
-    while current_date <= end_date:
-        st.write(f"#### {current_date.strftime('%b %d, %Y')}")
-        day_interactions = [i for i in st.session_state.interactions if i[2].date() == current_date.date()]
-        pruned_interactions = dg.prune_interactions(day_interactions)
-        st.plotly_chart(np.create_plotly_plot(pruned_interactions, selected_member=st.session_state.selected_option))
-        current_date += timedelta(days=1)  # Move to the next day
+if st.session_state.team_generated:
+    selection = st.selectbox(
+        "Overly Zealous Zoo Keeper?",
+        st.session_state.team.keys())
 
-    st.write(f"#### Entire Time Span")
-    pruned_interactions = dg.prune_interactions(st.session_state.interactions)
-    st.plotly_chart(np.create_plotly_plot(pruned_interactions, selected_member=st.session_state.selected_option))
+    if not st.session_state.team[selection]['legitimate']:
+        st.write("You found an overly zealous zoo keeper doing too much work! They need to be fired before"
+                 " they improve moral too much and make the zoo go bankrupt.")
+    else:
+        st.write("You found an average zoo keeper who periodically covers for others. They're a good person, but seem"
+                 " too happy. They should probably be paid less.")

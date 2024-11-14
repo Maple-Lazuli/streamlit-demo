@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 import random
 
 
-def generate_team(team_size: int, num_malicious: int = 1, accidental_exploration: int = .05,
-                  intentional_exploration: int = .15,
+def generate_team(team_size: int, num_malicious: int = 1, accidental_exploration: int = .04,
+                  intentional_exploration: int = .25,
                   person_base_name: str = "Zoo_Keeper") -> dict:
     team = dict()
     for i in range(team_size):
