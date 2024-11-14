@@ -21,7 +21,7 @@ def generate_interactions(team: dict, num_team_animals: int = 15, num_days: int 
     interactions = []
     interactions_per_step = int(len([_ for _ in team.keys()]) / 4)
 
-    with open("../data/animals.txt", "r") as file_in:
+    with open("./data/animals.txt", "r") as file_in:
         animals = file_in.readlines()
     animals = [animal.strip() for animal in animals]
 
