@@ -11,3 +11,4 @@ environment. Then run the following command from the src directory:
 streamlit run ZooApp.py
 ```
 
+The app is currently hosted to streamlit [here](https://zoo-app-5cunb3rfz8yvr3eax7aqe4.streamlit.app/).
